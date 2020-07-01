@@ -1,6 +1,7 @@
 import json
 import requests
 import os
+import re
 import sys
 import time
 
@@ -14,16 +15,26 @@ MONTH = int(input("Month Number? (1-12): "))
 
 def login(user, password):
     session = requests.Session()
-    url = "https://api.factorialhr.com/sessions"
-    querystring = {"locale":"en-US"}
-    payload = f"user%5Bemail%5D={user}&user%5Bpassword%5D={password}&user%5Bremember_me%5D=1"
+    url = "https://api.factorialhr.com/users/sign_in"
+    authenticity_token = get_auth_token(session)
+    payload = f"authenticity_token={authenticity_token}&user%5Bemail%5D={user}&user%5Bpassword%5D={password}&user%5Bremember_me%5D=1"
     headers = {
-        'Accept': "application/json, text/javascript, */*; q=0.01",
+        'Accept': "*/*",
         'Content-Type': "application/x-www-form-urlencoded",
         }
 
-    response = session.request("POST", url, data=payload, headers=headers, params=querystring)
+    session.request("POST", url, data=payload, headers=headers)
     return session
+
+def get_auth_token(session):
+    url = 'https://api.factorialhr.com/users/sign_in?return_host=factorialhr.es'
+    headers = {
+        'Accept': '*/*'
+    }
+    response = session.request("GET", url, headers=headers)
+    token = re.search('<meta name="csrf-token" content="(.+?)" />', response.text).group(1)
+    time.sleep(0.5)
+    return token
 
 def get_period(session, employee_id, year, month):
     url = "https://api.factorialhr.com/attendance/periods"
