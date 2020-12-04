@@ -4,6 +4,7 @@ import os
 import re
 import sys
 import time
+import urllib
 
 FACTORIAL_USER = os.environ['FACTORIAL_USER']
 FACTORIAL_PASSWORD = os.environ['FACTORIAL_PASSWORD']
@@ -34,7 +35,7 @@ def get_auth_token(session):
     response = session.request("GET", url, headers=headers)
     token = re.search('<meta name="csrf-token" content="(.+?)" />', response.text).group(1)
     time.sleep(0.5)
-    return token
+    return urllib.parse.quote_plus(token)
 
 def get_period(session, employee_id, year, month):
     url = "https://api.factorialhr.com/attendance/periods"
