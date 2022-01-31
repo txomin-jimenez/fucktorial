@@ -15,7 +15,7 @@ pipenv install
 
 This script needs your Factorial credentials to be provided inside env vars. Please ensure that email at `@` character is HTML escaped with `%40`:
 ```
-export FACTORIAL_USER="user%40nextail.co"
+export FACTORIAL_USER="user%40mycompany.com"
 export FACTORIAL_PASSWORD="XXXX"
 ```
 
