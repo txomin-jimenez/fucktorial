@@ -75,7 +75,11 @@ def print_calendar(calendar_data, period):
                 f"ALREADY REGISTERED {registered_minutes/60} hours"
         else:
             if day['is_leave']:
-                status = '\033[94m' + f"LEAVE DAY: {day['leave_name']}"
+                leaves = ""
+                for leave in day['leaves']:
+                    if leaves == "": leaves = leave['name']
+                    else: leaves = f"{leaves}, {leave['name']}"
+                status = '\033[94m' + f"LEAVE DAY: {leaves}"
             else:
                 if day['is_laborable']:
                     status = '\033[93m' + f"WILL REGISTER {REGISTERS_TEMPLATE}"
