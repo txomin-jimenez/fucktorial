@@ -4,6 +4,7 @@ import os
 import re
 import time
 import urllib
+from datetime import date, datetime
 
 FACTORIAL_USER = os.environ['FACTORIAL_USER']
 FACTORIAL_PASSWORD = os.environ['FACTORIAL_PASSWORD']
@@ -73,6 +74,8 @@ def print_calendar(calendar_data, period):
         if registered_minutes > 0:
             status = '\033[92m' + \
                 f"ALREADY REGISTERED {registered_minutes/60} hours"
+        elif is_future(day):
+            status = '\033[92m' + "FUTURE DAY: WILL NOT REGISTER ANYTHING"
         else:
             if day['is_leave']:
                 leaves = ""
@@ -94,7 +97,7 @@ def print_calendar(calendar_data, period):
 def register_pending(session, calendar_data, period):
     for day in calendar_data:
         registered_minutes = period['distribution'][day['day'] - 1]
-        if day['is_laborable'] and not day['is_leave'] and registered_minutes == 0:
+        if day['is_laborable'] and not is_future(day) and not day['is_leave'] and registered_minutes == 0:
             register_day(session, period['id'], day['day'])
             time.sleep(0.1)
 
@@ -116,6 +119,12 @@ def register_hours(session, period_id, day, clock_in, clock_out):
     response = session.request(
         "POST", url, data=payload, headers=headers, params=querystring)
     print(response.text)
+
+
+def is_future(day):
+    today = date.today()
+    given_day = datetime.strptime(day['date'], '%Y-%m-%d').date()
+    return given_day > today
 
 
 if __name__ == "__main__":
